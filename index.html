@@ -199,16 +199,25 @@
     
       /* MAPAS HISTÓRICOS */
       const overlayConfigs = [
-        {
-          id: "aranjuez",
-          nombre: "Hacienda Aranjuez",
-          url: "./hac_aranjuez/{z}/{x}/{y}.png",
-          opacidadInicial: 0.6,
-          minZoom: 5,
-          maxZoom: 20,
-          maxNativeZoom: 20
-        }
-      ];
+  {
+    id: "aranjuez",
+    nombre: "Hacienda Aranjuez",
+    url: "./hac_aranjuez/{z}/{x}/{y}.png",
+    opacidadInicial: 0.6,
+    minZoom: 5,
+    maxZoom: 20,
+    maxNativeZoom: 20
+  },
+  {
+    id: "candiani_cia",
+    nombre: "Haciendas Candiani y Compañía",
+    url: "./hac_candiani_cia/{z}/{x}/{y}.png",
+    opacidadInicial: 0.6,
+    minZoom: 5,
+    maxZoom: 20,
+    maxNativeZoom: 20
+  }
+];
     
       const overlayLayers = {};
       const overlaysDiv = document.getElementById("overlays");
