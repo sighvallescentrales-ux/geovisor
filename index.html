@@ -232,11 +232,11 @@
 
     overlayConfigs.forEach(cfg => {
       const layer = L.tileLayer(cfg.url, {
-        opacity: cfg.opacidadInicial,
-        minZoom: cfg.minZoom,
-        maxZoom: cfg.maxZoom,
-        tms: false   // <-- IMPORTANTE: tiles generados como TMS
-      });
+  opacity: cfg.opacidadInicial,
+  minZoom: cfg.minZoom,
+  maxZoom: cfg.maxZoom,
+  maxNativeZoom: cfg.maxNativeZoom
+});
 
       // Guardamos la capa pero NO la activamos por defecto
       overlayLayers[cfg.id] = layer;
