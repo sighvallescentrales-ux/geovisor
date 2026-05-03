@@ -89,7 +89,8 @@
     }
 
     /* Panel lateral para los overlays */
-    #overlay-panel{
+/* Panel lateral para los overlays */
+#overlay-panel{
   position:absolute;
   top:1rem;
   right:1rem;
@@ -100,10 +101,29 @@
 /* Panel lateral para los polígonos GeoJSON */
 #geojson-panel{
   position:absolute;
-  top:320px;
+  top:4.5rem;
   right:1rem;
-  z-index:1300;
+  z-index:1200;
   width:300px;
+}
+
+/* Estilo para paneles desplegables */
+summary.card-header{
+  cursor:pointer;
+  list-style:none;
+}
+
+summary.card-header::-webkit-details-marker{
+  display:none;
+}
+
+summary.card-header::after{
+  content:" ▼";
+  font-size:.75rem;
+}
+
+details:not([open]) summary.card-header::after{
+  content:" ▶";
 }
 
     .overlay-row{
@@ -161,17 +181,17 @@
     <!-- Contenedor del mapa -->
     <div id="map"></div>
 
-    <!-- Panel mapas históricos -->
-<div id="overlay-panel" class="card">
-  <div class="card-header">Mapas históricos del Distrito Centro</div>
+    <!-- Panel mapas históricos desplegable -->
+<details id="overlay-panel" class="card" open>
+  <summary class="card-header">Mapas históricos del Distrito Centro</summary>
   <div id="overlays"></div>
-</div>
+</details>
 
-<!-- NUEVO: Panel polígonos -->
-<div id="geojson-panel" class="card">
-  <div class="card-header">Polígonos de Haciendas</div>
+<!-- Panel polígonos desplegable -->
+<details id="geojson-panel" class="card">
+  <summary class="card-header">Polígonos de Haciendas</summary>
   <div id="geojson-controls"></div>
-</div>
+</details>
 
 </div> <!-- cierre de map-container -->
 
