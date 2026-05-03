@@ -90,21 +90,21 @@
 
     /* Panel lateral para los overlays */
 /* Panel lateral para los overlays */
-#overlay-panel{
+#paneles-laterales{
   position:absolute;
   top:1rem;
   right:1rem;
   z-index:1200;
   width:300px;
+  display:flex;
+  flex-direction:column;
+  gap:.6rem;
 }
 
-/* Panel lateral para los polígonos GeoJSON */
+#overlay-panel,
 #geojson-panel{
-  position:absolute;
-  top:4.5rem;
-  right:1rem;
-  z-index:1200;
-  width:300px;
+  position:static;
+  width:100%;
 }
 
 /* Estilo para paneles desplegables */
@@ -182,6 +182,8 @@ details:not([open]) summary.card-header::after{
     <div id="map"></div>
 
     <!-- Panel mapas históricos desplegable -->
+    <div id="paneles-laterales">
+    
 <details id="overlay-panel" class="card" open>
   <summary class="card-header">Mapas históricos del Distrito Centro</summary>
   <div id="overlays"></div>
