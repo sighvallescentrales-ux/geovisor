@@ -301,7 +301,69 @@
           maxNativeZoom: cfg.maxNativeZoom,
           tms: true
         });
-    
+        /* POLÍGONOS DE HACIENDAS */
+
+const geojsonConfigs = [
+  {
+    id: "hac_aranjuez",
+    nombre: "Polígono Hacienda Aranjuez",
+    url: "./geojson/hac_aranjuez.geojson",
+    color: "#ff7800"
+  }
+];
+const geojsonLayers = {};
+geojsonConfigs.forEach(cfg => {
+  fetch(cfg.url)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("No se pudo cargar " + cfg.url);
+      }
+      return response.json();
+    })
+    .then(data => {
+      const layer = L.geoJSON(data, {
+        style: {
+          color: cfg.color,
+          weight: 2,
+          fillColor: cfg.color,
+          fillOpacity: 0.25
+        },
+        onEachFeature: function (feature, layer) {
+          layer.bindPopup(`<strong>${cfg.nombre}</strong>`);
+        }
+      });
+
+      geojsonLayers[cfg.id] = layer;
+
+      const row = document.createElement("div");
+      row.className = "overlay-row";
+
+      row.innerHTML = `
+        <label>
+          <input type="checkbox" data-id="${cfg.id}">
+          ${cfg.nombre}
+        </label>
+      `;
+
+      overlaysDiv.appendChild(row);
+
+      const chk = row.querySelector('input[type="checkbox"]');
+
+      chk.addEventListener("change", e => {
+        const lyr = geojsonLayers[e.target.dataset.id];
+
+        if (e.target.checked) {
+          lyr.addTo(map);
+          map.fitBounds(lyr.getBounds());
+        } else {
+          map.removeLayer(lyr);
+        }
+      });
+    })
+    .catch(error => {
+      console.error("Error cargando GeoJSON:", error);
+    });
+});
         overlayLayers[cfg.id] = layer;
     
         const row = document.createElement("div");
