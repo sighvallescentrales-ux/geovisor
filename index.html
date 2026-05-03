@@ -152,12 +152,17 @@
     <!-- Contenedor del mapa -->
     <div id="map"></div>
 
-    <!-- Panel lateral de mapas históricos -->
-    <div id="overlay-panel" class="card">
-      <div class="card-header">Mapas históricos del Distrito Centro</div>
-      <div id="overlays"></div>
-    </div>
-  </div>
+    <!-- Panel mapas históricos -->
+<div id="overlay-panel" class="card">
+  <div class="card-header">Mapas históricos del Distrito Centro</div>
+  <div id="overlays"></div>
+</div>
+
+<!-- NUEVO: Panel polígonos -->
+<div id="geojson-panel" class="card">
+  <div class="card-header">Polígonos de Haciendas</div>
+  <div id="geojson-controls"></div>
+</div>
 
   <div id="footer">
     Construido por: Antonio Escobar Ohmstede, Daniela Osorio Crespo y Carlos Alfredo Hernández Guillén
@@ -292,7 +297,7 @@ const overlayConfigs = [
 ];
 
 const overlayLayers = {};
-const overlaysDiv = document.getElementById("overlays");
+const overlaysDiv = document.getElementById("geojson-controls");
 
 overlayConfigs.forEach(cfg => {
   const layer = L.tileLayer(cfg.url, {
@@ -381,7 +386,7 @@ geojsonConfigs.forEach(cfg => {
         </label>
       `;
 
-      overlaysDiv.appendChild(row);
+      geojsonDiv.appendChild(row);
 
       const chk = row.querySelector('input[type="checkbox"]');
 
