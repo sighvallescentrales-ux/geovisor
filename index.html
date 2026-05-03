@@ -197,8 +197,8 @@
         base[e.target.value].addTo(map);
       });
     
-      /* MAPAS HISTÓRICOS */
-      const overlayConfigs = [
+  /* MAPAS HISTÓRICOS */
+const overlayConfigs = [
   {
     id: "aranjuez",
     nombre: "Hacienda Aranjuez",
@@ -288,30 +288,67 @@
     minZoom: 5,
     maxZoom: 20,
     maxNativeZoom: 20
-  },
+  }
 ];
-      const overlayLayers = {};
-      const overlaysDiv = document.getElementById("overlays");
-    
-      overlayConfigs.forEach(cfg => {
-        const layer = L.tileLayer(cfg.url, {
-          opacity: cfg.opacidadInicial,
-          minZoom: cfg.minZoom,
-          maxZoom: cfg.maxZoom,
-          maxNativeZoom: cfg.maxNativeZoom,
-          tms: true
-        });
-        /* POLÍGONOS DE HACIENDAS */
 
+const overlayLayers = {};
+const overlaysDiv = document.getElementById("overlays");
+
+overlayConfigs.forEach(cfg => {
+  const layer = L.tileLayer(cfg.url, {
+    opacity: cfg.opacidadInicial,
+    minZoom: cfg.minZoom,
+    maxZoom: cfg.maxZoom,
+    maxNativeZoom: cfg.maxNativeZoom,
+    tms: true
+  });
+
+  overlayLayers[cfg.id] = layer;
+
+  const row = document.createElement("div");
+  row.className = "overlay-row";
+
+  row.innerHTML = `
+    <label>
+      <input type="checkbox" data-id="${cfg.id}">
+      ${cfg.nombre}
+    </label>
+    <input type="range" min="0" max="1" step="0.05"
+           value="${cfg.opacidadInicial}" data-id="${cfg.id}">
+  `;
+
+  overlaysDiv.appendChild(row);
+
+  const chk = row.querySelector('input[type="checkbox"]');
+  const rng = row.querySelector('input[type="range"]');
+
+  chk.addEventListener("change", e => {
+    const lyr = overlayLayers[e.target.dataset.id];
+    if (e.target.checked) {
+      lyr.addTo(map);
+    } else {
+      map.removeLayer(lyr);
+    }
+  });
+
+  rng.addEventListener("input", e => {
+    overlayLayers[e.target.dataset.id].setOpacity(parseFloat(e.target.value));
+  });
+});
+
+
+/* POLÍGONOS DE HACIENDAS */
 const geojsonConfigs = [
   {
-    id: "hac_aranjuez",
+    id: "poli_aranjuez",
     nombre: "Polígono Hacienda Aranjuez",
     url: "./geojson/hac_aranjuez.geojson",
     color: "#ff7800"
   }
 ];
+
 const geojsonLayers = {};
+
 geojsonConfigs.forEach(cfg => {
   fetch(cfg.url)
     .then(response => {
@@ -364,40 +401,5 @@ geojsonConfigs.forEach(cfg => {
       console.error("Error cargando GeoJSON:", error);
     });
 });
-        overlayLayers[cfg.id] = layer;
-    
-        const row = document.createElement("div");
-        row.className = "overlay-row";
-    
-        row.innerHTML = `
-          <label>
-            <input type="checkbox" data-id="${cfg.id}">
-            ${cfg.nombre}
-          </label>
-          <input type="range" min="0" max="1" step="0.05"
-                 value="${cfg.opacidadInicial}" data-id="${cfg.id}">
-        `;
-    
-        overlaysDiv.appendChild(row);
-    
-        const chk = row.querySelector('input[type="checkbox"]');
-        const rng = row.querySelector('input[type="range"]');
-    
-        chk.addEventListener("change", e => {
-          const lyr = overlayLayers[e.target.dataset.id];
-          if (e.target.checked) {
-            lyr.addTo(map);
-          } else {
-            map.removeLayer(lyr);
-          }
-        });
-    
-        rng.addEventListener("input", e => {
-          overlayLayers[e.target.dataset.id].setOpacity(parseFloat(e.target.value));
-        });
-      });
-    
-    }); // fin DOMContentLoaded
-    </script>
-</body>
-</html>
+
+}); // fin DOMContentLoaded
