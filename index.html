@@ -164,7 +164,9 @@
   <div id="geojson-controls"></div>
 </div>
 
-  <div id="footer">
+</div> <!-- cierre de map-container -->
+
+<div id="footer">
     Construido por: Antonio Escobar Ohmstede, Daniela Osorio Crespo y Carlos Alfredo Hernández Guillén
   </div>
 
@@ -297,7 +299,8 @@ const overlayConfigs = [
 ];
 
 const overlayLayers = {};
-const overlaysDiv = document.getElementById("geojson-controls");
+const overlaysDiv = document.getElementById("overlays");
+const geojsonDiv = document.getElementById("geojson-controls");
 
 overlayConfigs.forEach(cfg => {
   const layer = L.tileLayer(cfg.url, {
