@@ -1,0 +1,9 @@
+{
+"type": "FeatureCollection",
+"name": "H_Prio",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "Hacienda": "San Isidro Prio", "Distrito": "Centro", "Fuente": "Mapoteca Orozco y Berra", "Fecha": "Calca de 1909", "Mapa Refer": "https://mapoteca-dgsiap.agricultura.gob.mx/buscador/ficha.php?fichaNum=5AE9717E-88669ED5-A9EECFC2-18B20A8E&registro=MTk4OTk=&params=MCMjMCMjIyNJc2lkcm8gUHJpbyMjIyMjIyMj" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -96.731583533575673, 16.98978814454501 ], [ -96.737322686543038, 16.990988789069672 ], [ -96.739708299970488, 16.995788082177164 ], [ -96.742917337982647, 16.995443609170206 ], [ -96.740995541207013, 16.999740456678005 ], [ -96.735809433319304, 16.999153682570167 ], [ -96.728994189170592, 16.998353288601965 ], [ -96.731583533575673, 16.98978814454501 ] ] ] ] } },
+{ "type": "Feature", "properties": { "Hacienda": "Rancho Charrie", "Distrito": "Centro", "Fuente": "Mapoteca Orozco y Berra", "Fecha": "Calca 1909", "Mapa Refer": "https://mapoteca-dgsiap.agricultura.gob.mx/buscador/ficha.php?fichaNum=5AE9717E-88669ED5-A9EECFC2-18B20A8E&registro=MTk4OTk=&params=MCMjMCMjIyNJc2lkcm8gUHJpbyMjIyMjIyMj" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -96.728994189170592, 16.998353288601965 ], [ -96.735809433319304, 16.999153682570167 ], [ -96.734255079390664, 17.005470957845485 ], [ -96.728423284006766, 17.004290172713961 ], [ -96.728791246532126, 17.003151746072398 ], [ -96.727709003810475, 17.002820566114217 ], [ -96.728994189170592, 16.998353288601965 ] ] ] ] } }
+]
+}
