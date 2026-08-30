@@ -8,198 +8,166 @@
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
+  <meta name="description" content="Visor geohistórico para explorar haciendas, pueblos y territorios de los siglos XIX y XX en el Distrito Centro de Oaxaca." />
+  <meta name="theme-color" content="#3f2a1d" />
   <style>
-    html, body{
-      height:100%;
-      margin:0;
+    :root {
+      --brown-950:#241810; --brown-900:#3f2a1d; --brown-800:#553824;
+      --terracotta:#a65f3a; --terracotta-dark:#834529; --ivory:#f7f2e8;
+      --paper:#fffdf8; --ink:#25211e; --muted:#746f68; --green:#526653;
+      --line:rgba(63,42,29,.14); --shadow:0 14px 38px rgba(36,24,16,.2);
     }
-    body{
-      display:flex;
-      flex-direction:column;
-      font-family:system-ui,Segoe UI,Roboto,Arial;
-      background:#af661d;
-      color:#f5f5f4;
+    * { box-sizing:border-box; }
+    html, body { height:100%; margin:0; }
+    body { display:flex; flex-direction:column; overflow:hidden; font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; background:var(--ivory); color:var(--ink); }
+    button, select, input { font:inherit; }
+    button, summary, select, input[type="checkbox"], input[type="range"] { cursor:pointer; }
+    :focus-visible { outline:3px solid rgba(166,95,58,.45); outline-offset:2px; }
+
+    #top { min-height:76px; display:flex; align-items:center; gap:22px; padding:12px 18px; background:rgba(255,253,248,.97); border-bottom:1px solid var(--line); box-shadow:0 4px 20px rgba(36,24,16,.08); z-index:1300; }
+    .brand { display:flex; align-items:center; gap:12px; min-width:0; margin-right:auto; }
+    .brand-mark { width:42px; height:42px; display:grid; place-items:center; flex:0 0 auto; border-radius:12px; color:#fff; background:linear-gradient(145deg,var(--terracotta),var(--brown-900)); box-shadow:0 6px 16px rgba(166,95,58,.24); font-family:Georgia,serif; font-weight:700; }
+    .app-title { color:var(--brown-900); font-family:Georgia,"Times New Roman",serif; font-weight:700; font-size:1.12rem; letter-spacing:.015em; line-height:1.15; }
+    .subtitle { color:var(--muted); font-size:.78rem; margin-top:3px; max-width:510px; line-height:1.25; }
+    .toolbar { display:flex; align-items:end; gap:9px; }
+    .field { display:grid; gap:4px; }
+    .field label { color:var(--muted); font-size:.68rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
+    select, .tool-button { min-height:40px; border:1px solid var(--line); border-radius:10px; background:var(--paper); color:var(--ink); padding:8px 12px; box-shadow:0 2px 8px rgba(36,24,16,.05); }
+    .tool-button { display:inline-flex; align-items:center; justify-content:center; gap:7px; font-weight:650; }
+    .tool-button:hover { border-color:rgba(166,95,58,.45); background:#fff8ef; }
+    #layers-button { background:var(--brown-900); color:#fff; border-color:var(--brown-900); }
+
+    #map-container { position:relative; flex:1; min-height:0; }
+    #map { position:absolute; inset:0; background:#dedbd2; }
+    .leaflet-control-zoom a { color:var(--brown-900); }
+    .leaflet-control-attribution { font-size:10px; }
+
+    #paneles-laterales { position:absolute; top:16px; right:16px; z-index:1200; width:min(370px,calc(100% - 32px)); max-height:calc(100% - 32px); display:flex; flex-direction:column; overflow:hidden; background:rgba(255,253,248,.97); color:var(--ink); border:1px solid rgba(255,255,255,.8); border-radius:16px; box-shadow:var(--shadow); backdrop-filter:blur(14px); transition:transform .22s ease,opacity .22s ease; }
+    #paneles-laterales.is-hidden { transform:translateX(calc(100% + 28px)); opacity:0; pointer-events:none; }
+    .panel-heading { padding:16px 16px 12px; border-bottom:1px solid var(--line); }
+    .panel-kicker { color:var(--terracotta-dark); font-size:.69rem; font-weight:800; letter-spacing:.09em; text-transform:uppercase; }
+    .panel-title { margin:3px 0 4px; color:var(--brown-900); font-family:Georgia,serif; font-size:1.15rem; }
+    .panel-copy { margin:0; color:var(--muted); font-size:.76rem; line-height:1.4; }
+    #layer-search { width:100%; margin-top:12px; border:1px solid var(--line); border-radius:10px; padding:9px 11px; color:var(--ink); background:#fff; }
+    .panel-scroll { overflow:auto; overscroll-behavior:contain; scrollbar-width:thin; }
+    .layer-columns { position:sticky; top:0; z-index:2; display:grid; grid-template-columns:minmax(0,1fr) 52px 52px; align-items:center; padding:10px 16px 8px; border-bottom:1px solid var(--line); background:rgba(247,242,232,.98); color:var(--muted); font-size:.62rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+    .layer-columns span:not(:first-child) { text-align:center; }
+    #hacienda-controls { padding:6px 9px 10px; }
+    .hacienda-row { display:grid; grid-template-columns:minmax(0,1fr) 52px 52px; align-items:center; min-height:47px; padding:6px 7px; border-bottom:1px solid rgba(63,42,29,.07); border-radius:9px; font-size:.77rem; }
+    .hacienda-row:last-child { border-bottom:0; }
+    .hacienda-row:hover { background:#f9f3e9; }
+    .hacienda-row[hidden] { display:none; }
+    .hacienda-name { min-width:0; padding-right:7px; color:var(--ink); font-weight:620; line-height:1.25; }
+    .layer-check { display:grid; place-items:center; position:relative; }
+    .layer-check input { margin:0; }
+    .layer-check input:disabled { cursor:not-allowed; opacity:.42; }
+    .pending-mark { position:absolute; right:2px; bottom:-6px; color:var(--muted); font-size:.54rem; font-weight:700; }
+    .opacity-row { display:none; grid-column:1 / -1; grid-template-columns:auto 1fr auto; align-items:center; gap:8px; margin:5px 5px 2px; padding:7px 9px; border-radius:8px; background:rgba(166,95,58,.08); color:var(--muted); font-size:.66rem; }
+    .hacienda-row.map-active .opacity-row { display:grid; }
+    input[type="checkbox"] { width:17px; height:17px; flex:0 0 auto; accent-color:var(--terracotta); }
+    input[type="range"] { width:100%; accent-color:var(--terracotta); }
+    input[type="range"]:disabled { opacity:.32; cursor:not-allowed; }
+    output { width:31px; color:var(--muted); font-variant-numeric:tabular-nums; font-size:.68rem; text-align:right; }
+    .empty-state { padding:12px 8px; color:var(--muted); font-size:.76rem; line-height:1.4; }
+    .map-status { position:absolute; left:50%; bottom:18px; z-index:1100; transform:translateX(-50%); max-width:calc(100% - 32px); padding:9px 13px; border-radius:999px; color:#fff; background:rgba(63,42,29,.9); box-shadow:0 7px 20px rgba(36,24,16,.2); font-size:.73rem; opacity:0; pointer-events:none; transition:opacity .2s; }
+    .map-status.show { opacity:1; }
+    #footer { flex:0 0 auto; padding:6px 14px; background:var(--brown-900); color:#ede4d8; font-size:.68rem; text-align:center; }
+
+    dialog { width:min(560px,calc(100% - 30px)); padding:0; border:0; border-radius:18px; color:var(--ink); background:var(--paper); box-shadow:0 26px 70px rgba(36,24,16,.35); }
+    dialog::backdrop { background:rgba(36,24,16,.58); backdrop-filter:blur(3px); }
+    dialog.dialog-fallback { position:fixed; inset:50% auto auto 50%; z-index:2000; transform:translate(-50%,-50%); }
+    .dialog-body { padding:24px; }
+    .dialog-body h2 { margin:0 0 10px; color:var(--brown-900); font-family:Georgia,serif; }
+    .dialog-body p, .dialog-body li { color:var(--muted); font-size:.9rem; line-height:1.55; }
+    .dialog-actions { display:flex; justify-content:flex-end; padding:14px 24px; border-top:1px solid var(--line); background:var(--ivory); }
+
+    @media (max-width:720px) {
+      #top { min-height:auto; align-items:flex-start; flex-wrap:wrap; gap:10px; padding:10px 12px; }
+      .brand { width:100%; }
+      .brand-mark { width:36px; height:36px; border-radius:10px; }
+      .app-title { font-size:1rem; }
+      .subtitle { font-size:.71rem; max-width:300px; }
+      .toolbar { width:100%; align-items:end; }
+      .toolbar .field { flex:1; }
+      select { width:100%; }
+      .tool-button .button-label { display:none; }
+      #paneles-laterales { top:auto; bottom:10px; right:10px; width:calc(100% - 20px); max-height:min(62%,520px); border-radius:16px; }
+      #paneles-laterales.is-hidden { transform:translateY(calc(100% + 20px)); }
+      .panel-heading { padding:12px 14px 10px; }
+      .panel-title { font-size:1rem; }
+      .panel-copy { display:none; }
+      #layer-search { margin-top:8px; }
+      .layer-columns, .hacienda-row { grid-template-columns:minmax(0,1fr) 48px 48px; }
+      #footer { display:none; }
+      .leaflet-control-attribution { max-width:70%; overflow:hidden; white-space:nowrap; }
     }
-
-    /* Barra superior */
-    #top{
-      display:flex;
-      gap:1rem;
-      align-items:flex-start;
-      padding:.7rem .9rem;
-      background:#af661d;
-      box-shadow:0 2px 6px rgba(0,0,0,.35);
-      z-index:1000;
-      flex-wrap:wrap;
-    }
-
-    .app-title{
-      font-weight:700;
-      font-size:1.15rem;
-      letter-spacing:.05em;
-      text-transform:uppercase;
-      text-shadow:0 1px 2px rgba(0,0,0,.4);
-      line-height:1.2;
-    }
-
-    .subtitle{
-      font-size:.82rem;
-      margin-top:.15rem;
-      opacity:0.9;
-      max-width:300px;
-      line-height:1.1;
-    }
-
-    .card{
-      background:#5c3413;
-      color:#f5f5f4;
-      border-radius:12px;
-      padding:.5rem .7rem;
-      display:flex;
-      flex-direction:column;
-      gap:.35rem;
-      font-size:.9rem;
-      border:1px solid #8c5930;
-    }
-    .card-header{
-      font-weight:600;
-      margin-bottom:.15rem;
-      font-size:.9rem;
-    }
-
-    select{
-      background:#704214;
-      color:#f5f5f4;
-      border:1px solid #8c5930;
-      border-radius:999px;
-      padding:.3rem .7rem;
-      cursor:pointer;
-      font-size:.85rem;
-    }
-
-    /* Contenedor del mapa */
-    #map-container{
-      position:relative;
-      flex:1;
-    }
-    /* Aquí se dibuja el mapa */
-    #map{
-      position:absolute;
-      inset:0;
-    }
-
-    /* Panel lateral para los overlays */
-/* Panel lateral para los overlays */
-#paneles-laterales{
-  position:absolute;
-  top:1rem;
-  right:1rem;
-  z-index:1200;
-  width:300px;
-  display:flex;
-  flex-direction:column;
-  gap:.6rem;
-}
-
-#overlay-panel,
-#geojson-panel{
-  position:static;
-  width:100%;
-}
-
-/* Estilo para paneles desplegables */
-summary.card-header{
-  cursor:pointer;
-  list-style:none;
-}
-
-summary.card-header::-webkit-details-marker{
-  display:none;
-}
-
-summary.card-header::after{
-  content:" ▼";
-  font-size:.75rem;
-}
-
-details:not([open]) summary.card-header::after{
-  content:" ▶";
-}
-
-    .overlay-row{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:.4rem;
-      font-size:.8rem;
-      width:100%;
-    }
-
-    .overlay-row label{
-      display:flex;
-      align-items:center;
-      gap:.25rem;
-      flex:1;
-    }
-
-    input[type=range]{
-      width:120px;
-      margin-left:.3rem;
-    }
-
-    /* Footer */
-    #footer{
-      background:#4f2d10;
-      color:#f5f5f4;
-      font-size:.78rem;
-      text-align:center;
-      padding:.25rem .5rem;
-      border-top:1px solid #8c5930;
-    }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; } }
   </style>
 </head>
 <body>
 
-  <div id="top">
-    <div>
-      <div class="app-title">Visor Geohistórico Interactivo (VGI)</div>
-      <div class="subtitle">Recuperación de los territorios, haciendas y pueblos de los siglos XIX–XX</div>
+  <header id="top">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">VGI</div>
+      <div>
+        <div class="app-title">Visor Geohistórico Interactivo</div>
+        <div class="subtitle">Territorios, haciendas y pueblos de los siglos XIX–XX · Distrito Centro de Oaxaca</div>
+      </div>
     </div>
-
-    <!-- MAPAS BASE -->
-    <div class="card">
-      <div class="card-header">Mapas base</div>
-      <select id="base">
+    <div class="toolbar" aria-label="Herramientas del mapa">
+      <div class="field">
+        <label for="base">Mapa base</label>
+        <select id="base" aria-label="Seleccionar mapa base">
         <option value="osm">OSM</option>
         <option value="opentopo" selected>OpenTopo</option>
         <option value="esri">Esri Imagery</option>
-      </select>
+        </select>
+      </div>
+      <button id="reset-button" class="tool-button" type="button" title="Restablecer vista"><span aria-hidden="true">↺</span><span class="button-label">Restablecer</span></button>
+      <button id="help-button" class="tool-button" type="button" title="Cómo usar el visor"><span aria-hidden="true">?</span><span class="button-label">Ayuda</span></button>
+      <button id="layers-button" class="tool-button" type="button" aria-label="Mostrar u ocultar capas" aria-controls="paneles-laterales" aria-expanded="true"><span aria-hidden="true">☷</span><span class="button-label">Capas</span></button>
     </div>
-  </div>
+  </header>
 
   <div id="map-container">
     <!-- Contenedor del mapa -->
     <div id="map"></div>
 
-    <!-- Panel mapas históricos desplegable -->
-    <div id="paneles-laterales">
-    
-<details id="overlay-panel" class="card" open>
-  <summary class="card-header">Mapas históricos del Distrito Centro</summary>
-  <div id="overlays"></div>
-</details>
-
-<!-- Panel polígonos desplegable -->
-<details id="geojson-panel" class="card">
-  <summary class="card-header">Polígonos de Haciendas</summary>
-  <div id="geojson-controls"></div>
-</details>
-
-</div> <!-- cierre de map-container -->
-
-<div id="footer">
-    Construido por: Antonio Escobar Ohmstede, Daniela Osorio Crespo y Carlos Alfredo Hernández Guillén
+    <aside id="paneles-laterales" aria-label="Capas del mapa">
+      <div class="panel-heading">
+        <div class="panel-kicker">Explorar el territorio</div>
+        <h1 class="panel-title">Capas cartográficas</h1>
+        <p class="panel-copy">Cada hacienda reúne su mapa histórico y su límite territorial. Actívalos juntos o por separado.</p>
+        <input id="layer-search" type="search" placeholder="Buscar una hacienda…" aria-label="Buscar una hacienda" />
+      </div>
+      <div class="panel-scroll">
+        <div class="layer-columns" aria-hidden="true">
+          <span>Hacienda</span><span>Mapa</span><span>Límite</span>
+        </div>
+        <div id="hacienda-controls"></div>
+      </div>
+    </aside>
+    <div id="map-status" class="map-status" role="status" aria-live="polite"></div>
   </div>
+
+  <footer id="footer">
+    Construido por: Antonio Escobar Ohmstede, Daniela Osorio Crespo y Carlos Alfredo Hernández Guillén
+  </footer>
+
+  <dialog id="help-dialog" aria-labelledby="help-title">
+    <div class="dialog-body">
+      <div class="panel-kicker">Guía rápida</div>
+      <h2 id="help-title">Cómo utilizar el visor</h2>
+      <ol>
+        <li>Elige un mapa base en la barra superior.</li>
+        <li>En cada hacienda, activa el mapa histórico, el límite territorial o ambos.</li>
+        <li>Ajusta el porcentaje de opacidad para comparar el pasado con el territorio actual.</li>
+        <li>Activa un límite de hacienda para acercarte automáticamente a su extensión.</li>
+      </ol>
+      <p>Los límites representan una reconstrucción histórica y deben interpretarse de acuerdo con las fuentes y la metodología del proyecto.</p>
+    </div>
+    <div class="dialog-actions"><button id="close-help" class="tool-button" type="button">Entendido</button></div>
+  </dialog>
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -207,10 +175,16 @@ details:not([open]) summary.card-header::after{
   <script>
     document.addEventListener("DOMContentLoaded", function () {
     
-      const map = L.map("map", {
-        center: [17.046, -96.635],
-        zoom: 14
-      });
+      const initialView = { center: [17.046, -96.635], zoom: 14 };
+      const map = L.map("map", initialView);
+      const statusEl = document.getElementById("map-status");
+      let statusTimer;
+      function showStatus(message) {
+        statusEl.textContent = message;
+        statusEl.classList.add("show");
+        clearTimeout(statusTimer);
+        statusTimer = setTimeout(() => statusEl.classList.remove("show"), 3200);
+      }
     
       /* MAPAS BASE */
       const base = {
@@ -330,9 +304,6 @@ const overlayConfigs = [
 ];
 
 const overlayLayers = {};
-const overlaysDiv = document.getElementById("overlays");
-const geojsonDiv = document.getElementById("geojson-controls");
-
 overlayConfigs.forEach(cfg => {
   const layer = L.tileLayer(cfg.url, {
     opacity: cfg.opacidadInicial,
@@ -343,36 +314,6 @@ overlayConfigs.forEach(cfg => {
   });
 
   overlayLayers[cfg.id] = layer;
-
-  const row = document.createElement("div");
-  row.className = "overlay-row";
-
-  row.innerHTML = `
-    <label>
-      <input type="checkbox" data-id="${cfg.id}">
-      ${cfg.nombre}
-    </label>
-    <input type="range" min="0" max="1" step="0.05"
-           value="${cfg.opacidadInicial}" data-id="${cfg.id}">
-  `;
-
-  overlaysDiv.appendChild(row);
-
-  const chk = row.querySelector('input[type="checkbox"]');
-  const rng = row.querySelector('input[type="range"]');
-
-  chk.addEventListener("change", e => {
-    const lyr = overlayLayers[e.target.dataset.id];
-    if (e.target.checked) {
-      lyr.addTo(map);
-    } else {
-      map.removeLayer(lyr);
-    }
-  });
-
-  rng.addEventListener("input", e => {
-    overlayLayers[e.target.dataset.id].setOpacity(parseFloat(e.target.value));
-  });
 });
 
 /* POLÍGONOS DE HACIENDAS */
@@ -452,8 +393,81 @@ const geojsonConfigs = [
 ];
 
 const geojsonLayers = {};
+const haciendas = [
+  { nombre: "Hacienda Aranjuez", mapa: "aranjuez", limite: "poli_aranjuez" },
+  { nombre: "Hacienda La Compañía", mapa: "candiani_cia", limite: "poli_compa" },
+  { nombre: "Hacienda Cinco Señores", mapa: "cinco_seniores", limite: "poli_cinco" },
+  { nombre: "Hacienda del Carmen", mapa: "hac_del_carmen", limite: "poli_carmen" },
+  { nombre: "Hacienda del Rosario", mapa: "hac_del_rosario", limite: "poli_rosario" },
+  { nombre: "Hacienda Montoya", mapa: "hac_montoya", limite: "poli_montoya" },
+  { nombre: "Hacienda Reyes Mantecón", mapa: "hac_reyes_mantecon", limite: "poli_mantecon" },
+  { nombre: "Hacienda San Isidro Monjas", mapa: "hac_san_isidro_monjas", limite: "poli_monjas" },
+  { nombre: "Hacienda San Isidro Prío", mapa: "hac_san_isidro_prio", limite: "poli_prio" },
+  { nombre: "Hacienda San Miguel", mapa: "hac_san_miguel", limite: "poli_sanmiguel" },
+  { nombre: "Hacienda San Luis", mapa: null, limite: "poli_sanluis" },
+  { nombre: "Hacienda San José Santa Catarina", mapa: null, limite: "poli_sanjose_cata" }
+];
+
+const overlayById = Object.fromEntries(overlayConfigs.map(cfg => [cfg.id, cfg]));
+const geojsonById = Object.fromEntries(geojsonConfigs.map(cfg => [cfg.id, cfg]));
+const haciendaControls = document.getElementById("hacienda-controls");
+const limitInputs = {};
+
+haciendas.forEach(item => {
+  const mapCfg = item.mapa ? overlayById[item.mapa] : null;
+  const row = document.createElement("div");
+  row.className = "hacienda-row";
+  row.dataset.name = item.nombre.toLocaleLowerCase("es");
+  row.innerHTML = `
+    <div class="hacienda-name">${item.nombre}</div>
+    <label class="layer-check" title="${mapCfg ? `Activar mapa histórico de ${item.nombre}` : "Mapa histórico pendiente de incorporar"}">
+      <input class="map-check" type="checkbox" ${mapCfg ? `data-id="${mapCfg.id}"` : "disabled"}
+             aria-label="Mapa histórico de ${item.nombre}${mapCfg ? "" : " (pendiente)"}">
+      ${mapCfg ? "" : '<span class="pending-mark" aria-hidden="true">PEND.</span>'}
+    </label>
+    <label class="layer-check" title="Cargando límite territorial">
+      <input class="limit-check" type="checkbox" data-id="${item.limite}" disabled
+             aria-label="Límite de ${item.nombre}">
+    </label>
+    ${mapCfg ? `
+      <div class="opacity-row">
+        <span>Opacidad</span>
+        <input type="range" min="0" max="1" step="0.05" value="${mapCfg.opacidadInicial}"
+               data-id="${mapCfg.id}" aria-label="Opacidad del mapa histórico de ${item.nombre}">
+        <output>${Math.round(mapCfg.opacidadInicial * 100)}%</output>
+      </div>` : ""}
+  `;
+  haciendaControls.appendChild(row);
+
+  const mapCheck = row.querySelector(".map-check");
+  const range = row.querySelector('input[type="range"]');
+  const output = row.querySelector("output");
+  if (mapCfg) {
+    mapCheck.addEventListener("change", e => {
+      if (e.target.checked) {
+        overlayLayers[mapCfg.id].addTo(map);
+        row.classList.add("map-active");
+        showStatus(`Mapa histórico de ${item.nombre} activado`);
+      } else {
+        map.removeLayer(overlayLayers[mapCfg.id]);
+        row.classList.remove("map-active");
+      }
+    });
+    range.addEventListener("input", e => {
+      overlayLayers[mapCfg.id].setOpacity(parseFloat(e.target.value));
+      output.value = `${Math.round(parseFloat(e.target.value) * 100)}%`;
+    });
+  }
+
+  limitInputs[item.limite] = {
+    input: row.querySelector(".limit-check"),
+    label: row.querySelectorAll(".layer-check")[1],
+    nombre: item.nombre
+  };
+});
 
 geojsonConfigs.forEach(cfg => {
+  const control = limitInputs[cfg.id];
   fetch(cfg.url)
     .then(response => {
       if (!response.ok) {
@@ -475,27 +489,16 @@ geojsonConfigs.forEach(cfg => {
       });
 
       geojsonLayers[cfg.id] = layer;
+      control.input.disabled = false;
+      control.label.title = `Activar límite de ${control.nombre}`;
 
-      const row = document.createElement("div");
-      row.className = "overlay-row";
-
-      row.innerHTML = `
-        <label>
-          <input type="checkbox" data-id="${cfg.id}">
-          ${cfg.nombre}
-        </label>
-      `;
-
-      geojsonDiv.appendChild(row);
-
-      const chk = row.querySelector('input[type="checkbox"]');
-
-      chk.addEventListener("change", e => {
+      control.input.addEventListener("change", e => {
         const lyr = geojsonLayers[e.target.dataset.id];
 
         if (e.target.checked) {
           lyr.addTo(map);
-          map.fitBounds(lyr.getBounds());
+          if (lyr.getBounds().isValid()) map.fitBounds(lyr.getBounds());
+          showStatus(`Límite de ${control.nombre} activado`);
         } else {
           map.removeLayer(lyr);
         }
@@ -503,8 +506,51 @@ geojsonConfigs.forEach(cfg => {
     })
     .catch(error => {
       console.error("Error cargando GeoJSON:", error);
+      control.label.title = "El archivo del límite no está disponible en esta ubicación";
     });
 });
+
+/* INTERFAZ Y ACCESIBILIDAD */
+const layersPanel = document.getElementById("paneles-laterales");
+const layersButton = document.getElementById("layers-button");
+layersButton.addEventListener("click", () => {
+  const hidden = layersPanel.classList.toggle("is-hidden");
+  layersButton.setAttribute("aria-expanded", String(!hidden));
+  if (!hidden) setTimeout(() => map.invalidateSize(), 240);
+});
+
+document.getElementById("reset-button").addEventListener("click", () => {
+  map.setView(initialView.center, initialView.zoom);
+  showStatus("Vista inicial restablecida");
+});
+
+const helpDialog = document.getElementById("help-dialog");
+function openHelp() {
+  if (typeof helpDialog.showModal === "function") helpDialog.showModal();
+  else {
+    helpDialog.setAttribute("open", "");
+    helpDialog.classList.add("dialog-fallback");
+  }
+}
+function closeHelp() {
+  if (typeof helpDialog.close === "function") helpDialog.close();
+  else helpDialog.removeAttribute("open");
+  helpDialog.classList.remove("dialog-fallback");
+}
+document.getElementById("help-button").addEventListener("click", openHelp);
+document.getElementById("close-help").addEventListener("click", closeHelp);
+helpDialog.addEventListener("click", e => {
+  if (e.target === helpDialog) closeHelp();
+});
+
+document.getElementById("layer-search").addEventListener("input", e => {
+  const term = e.target.value.trim().toLocaleLowerCase("es");
+  document.querySelectorAll(".hacienda-row[data-name]").forEach(row => {
+    row.hidden = term && !row.dataset.name.includes(term);
+  });
+});
+
+window.addEventListener("resize", () => map.invalidateSize());
 }); // fin DOMContentLoaded
 </script>
 </body>
