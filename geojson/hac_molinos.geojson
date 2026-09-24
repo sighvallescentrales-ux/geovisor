@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "hac_molinos",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "Hacienda": "Molinos de Lazo", "Fecha": "Calca 1908", "Fuente": "Mapoteca Orozco y Berra", "Distrito": "Etla", "Mapa Refer": "https://mapoteca-dgsiap.agricultura.gob.mx/buscador/ficha.php?fichaNum=37C5031E-1FFA1B11-9B2FD245-77EE5BB4&registro=MTk4MTE=&params=MCMjMCMjTW9saW5vcyBkZSBsYXpvIyMjIyMjIyMjIw==L" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -96.777110866608226, 17.154180825871965 ], [ -96.775066604983948, 17.149833350559113 ], [ -96.780650639971029, 17.149480767523674 ], [ -96.785282003516443, 17.149144739142372 ], [ -96.785631992767904, 17.149151689419853 ], [ -96.78557049458523, 17.148305485903371 ], [ -96.786234674958152, 17.148387755858938 ], [ -96.786431469142713, 17.148940138902276 ], [ -96.787132548425234, 17.148740340969916 ], [ -96.787747530252005, 17.1510203751901 ], [ -96.787525016697558, 17.158489686328394 ], [ -96.787048909596976, 17.162231982133061 ], [ -96.778901572871433, 17.163938537608185 ], [ -96.778456923964328, 17.160412341170407 ], [ -96.777110866608226, 17.154180825871965 ] ] ] ] } }
+]
+}
