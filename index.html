@@ -166,7 +166,7 @@
       <h2 id="help-title">Cómo utilizar el visor</h2>
       <ol>
         <li>Elige un mapa base en la barra superior.</li>
-        <li>Abre o cierra los grupos Centro, Etla y Ocotlán haciendo clic en su nombre. Plegarlos conserva las capas activadas.</li>
+        <li>Abre o cierra los grupos Centro, Etla, Ocotlán y Tlacolula haciendo clic en su nombre. Plegarlos conserva las capas activadas.</li>
         <li>En cada hacienda, activa el mapa histórico, el límite territorial o ambos.</li>
         <li>Ajusta el porcentaje de opacidad para comparar el territorio pasado con el actual.</li>
         <li>Activa un límite de hacienda para acercarte automáticamente a su extensión.</li>
@@ -225,7 +225,12 @@ const nuevasHaciendas = [
   { id: "molinos", nombre: "Hacienda Molinos", grupo: "Etla", mapaDisponible: true, limiteDisponible: true },
   { id: "blanca", nombre: "Hacienda Blanca", grupo: "Etla", mapaDisponible: true, limiteDisponible: true },
   { id: "viguera", nombre: "Hacienda Viguera", grupo: "Etla", mapaDisponible: true, limiteDisponible: true },
-  { id: "guegorene", nombre: "Hacienda Guegorene", grupo: "Ocotlán", mapaDisponible: true, limiteDisponible: true }
+  { id: "guegorene", nombre: "Hacienda Guegorene", grupo: "Ocotlán", mapaDisponible: true, limiteDisponible: true },
+  // Nuevo grupo: habilita cada mapa o límite cuando sus archivos estén publicados.
+  { id: "buenavista", nombre: "Hacienda Buenavista", grupo: "Tlacolula", carpetaMapa: "hac_buenavista", mapaDisponible: false, limiteDisponible: false },
+  { id: "santa_rosa", nombre: "Hacienda Santa Rosa", grupo: "Tlacolula", carpetaMapa: "hac_santa_rosa", mapaDisponible: false, limiteDisponible: false },
+  { id: "xaaga", nombre: "Hacienda Xaaga", grupo: "Tlacolula", carpetaMapa: "hac_xaaga", mapaDisponible: false, limiteDisponible: false },
+  { id: "zoriano", nombre: "Hacienda Zoriano", grupo: "Tlacolula", carpetaMapa: "Hac_zoriano", mapaDisponible: false, limiteDisponible: false }
 ];
 // Rutas esperadas: ./hac_ID/{z}/{x}/{y}.png y ./geojson/hac_ID.geojson
 const overlayConfigs = [
@@ -323,7 +328,7 @@ const overlayConfigs = [
 
 nuevasHaciendas.forEach(item => overlayConfigs.push({
   id: `hac_${item.id}`, nombre: item.nombre,
-  url: `./hac_${item.id}/{z}/{x}/{y}.png`, disponible: item.mapaDisponible,
+  url: `./${item.carpetaMapa || `hac_${item.id}`}/{z}/{x}/{y}.png`, disponible: item.mapaDisponible,
   opacidadInicial: 0.6, minZoom: 5, maxZoom: 20, maxNativeZoom: 20
 }));
 
@@ -450,7 +455,7 @@ const geojsonById = Object.fromEntries(geojsonConfigs.map(cfg => [cfg.id, cfg]))
 const haciendaControls = document.getElementById("hacienda-controls");
 const limitInputs = {};
 const grupos = new Map();
-["Centro", "Etla", "Ocotlán"].forEach(nombre => {
+["Centro", "Etla", "Ocotlán", "Tlacolula"].forEach(nombre => {
   const group = document.createElement("details");
   group.className = "district-group";
   const summary = document.createElement("summary");
