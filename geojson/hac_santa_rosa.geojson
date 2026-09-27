@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "hac_santa_rosa",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "Hacienda": "Santa Rosa los negritos", "Distrito": "Tlacolula", "Fecha": "Calca de 1907", "Fuente": "Mapoteca Orozco y Berra", "Mapa Refer": "https://mapoteca-dgsiap.agricultura.gob.mx/buscador/ficha.php?fichaNum=1F2D1DA3-435F684B-46DD0B79-C4FE6710&registro=MTk4NjA=&params=MCMjMCMjVGxhY29sdWxhIyNTYW50YSBSb3NhIyMjIyMjIyM=" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -96.598914739643817, 16.986803978255104 ], [ -96.600118482124557, 16.983315903821328 ], [ -96.601394089827991, 16.983281538233321 ], [ -96.602184607278019, 16.983788430018041 ], [ -96.605580239051989, 16.969560574353324 ], [ -96.61626120778017, 16.972163940153841 ], [ -96.626933193355512, 16.97502502330423 ], [ -96.650693632620474, 16.97794620434815 ], [ -96.655454703626305, 16.986142451881172 ], [ -96.627121839565177, 16.987731829497616 ], [ -96.613144053744278, 16.987980973956898 ], [ -96.602723596448484, 16.987980973956898 ], [ -96.598914739643817, 16.986803978255104 ] ] ] ] } }
+]
+}
